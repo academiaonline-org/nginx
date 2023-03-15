@@ -1,0 +1,63 @@
+########################################################################
+# Copyright (C) 2020            Sebastian Francisco Colomar Bauza
+# Copyright (C) 2020, 2021      Alejandro Colomar <alx.manpages@gmail.com>
+# SPDX-License-Identifier:      GPL-2.0-only
+########################################################################
+
+configs:
+        etc-nginx-conf-d-events-conf-nginx-config:
+                file: /run/configs/nginx/etc/nginx/conf.d/events.conf
+        etc-nginx-conf-d-http-conf-nginx-config:
+                file: /run/configs/nginx/etc/nginx/conf.d/http.conf
+        etc-nginx-conf-d-server-conf-nginx-config:
+                file: /run/configs/nginx/etc/nginx/conf.d/server.conf
+        etc-nginx-nginx-conf-nginx-config:
+                file: /run/configs/nginx/etc/nginx/nginx.conf
+
+services:
+        nginx:
+                configs:
+                -
+                        mode: 0440
+                        source:  etc-nginx-conf-d-events-conf-nginx-config
+                        target: /etc/nginx/conf.d/events.conf
+                -
+                        mode: 0440
+                        source:  etc-nginx-conf-d-http-conf-nginx-config
+                        target: /etc/nginx/conf.d/http.conf
+                -
+                        mode: 0440
+                        source:  etc-nginx-conf-d-server-conf-nginx-config
+                        target: /etc/nginx/conf.d/server.conf
+                -
+                        mode: 0440
+                        source:  etc-nginx-nginx-conf-nginx-config
+                        target: /etc/nginx/nginx.conf
+                deploy:
+                        mode: replicated
+                        placement:
+                                constraints:
+                                -
+                                        node.role == ${node_role}
+                        replicas: 1
+                        resources:
+                                limits:
+                                        cpus: "0.5"
+                                        memory: "1g"
+                                reservations:
+                                        cpus: "0.5"
+                                        memory: "1g"
+                        restart_policy:
+                                condition: any
+                healthcheck:
+                        interval: 10s
+                        retries: 3
+                        start_period: 30s
+                        test: curl -4s -o /dev/null -w '%{http_code}' http://localhost:8080
+                        timeout: 1s
+                image: "${image}:${label}${digest}"
+                ports:
+                -
+                        "${host_port}:8080"
+
+version: "3.8"
