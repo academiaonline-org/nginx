@@ -104,7 +104,7 @@ metadata:
   name: nginx
 spec:
   ports:
-  - port: 8080
+  - port: 80
   selector:
     app: nginx
   type: ClusterIP
