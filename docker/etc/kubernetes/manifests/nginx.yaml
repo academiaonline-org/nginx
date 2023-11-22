@@ -74,9 +74,7 @@ spec:
             path: default.conf
           secretName: default.conf
       - name: nginx-cache
-        emptyDir: {}
       - name: nginx-run
-        emptyDir: {}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
